@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserController {
 
+//    todo DTO
 
     private UserDAO userDAO;
 
