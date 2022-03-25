@@ -1,15 +1,15 @@
 package ua.com.owu.sep2021javaadv.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.com.owu.sep2021javaadv.dao.UserDAO;
-import ua.com.owu.sep2021javaadv.models.User;
+import ua.com.owu.sep2021javaadv.models.dto.UserWithPassportDTO;
+import ua.com.owu.sep2021javaadv.models.entity.User;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -21,8 +21,10 @@ public class UserController {
 
 
     @GetMapping("")
-    public ResponseEntity<List<User>> findAll() {
-        ResponseEntity<List<User>> response = new ResponseEntity<>(userDAO.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<UserWithPassportDTO>> findAll() {
+        List<User> allUsers = userDAO.findAll();
+        List<UserWithPassportDTO> userWithPassportDTOS = allUsers.stream().map(UserWithPassportDTO::new).collect(Collectors.toList());
+        ResponseEntity<List<UserWithPassportDTO>> response = new ResponseEntity<>(userWithPassportDTOS, HttpStatus.OK);
         return response;
 
     }
@@ -38,11 +40,12 @@ public class UserController {
     }
 
 
-    @PatchMapping("/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user) {
-        user.setId(id);
-        userDAO.save(user);
-        return user;
+    @GetMapping("/findBy")
+    public void findBy() {
+        System.out.println(userDAO.findByAge(33));
+        System.out.println(userDAO.findByName("lana"));
+        System.out.println(userDAO.findByNameAndAge("lana", 32));
+
     }
 
 
@@ -52,6 +55,18 @@ public class UserController {
         return userDAO.findAll();
     }
 
+    @PostMapping("/with-passport")
+    public List<UserWithPassportDTO> saveUserWithPassport(@RequestBody User user) {
+        userDAO.save(user);
+        return userDAO.findAll().stream().map(UserWithPassportDTO::new).collect(Collectors.toList());
+    }
+
+    @PatchMapping("/{id}")
+    public User updateUser(@PathVariable int id, @RequestBody User user) {
+        user.setId(id);
+        userDAO.save(user);
+        return user;
+    }
 
     @DeleteMapping("/{id}")
     public List<User> deleteUser(@PathVariable int id) {
@@ -59,13 +74,5 @@ public class UserController {
         return userDAO.findAll();
     }
 
-
-    @GetMapping("/findBy")
-    public void findBy() {
-        System.out.println(userDAO.findByAge(33));
-        System.out.println(userDAO.findByName("lana"));
-        System.out.println(userDAO.findByNameAndAge("lana", 32));
-
-    }
 
 }
