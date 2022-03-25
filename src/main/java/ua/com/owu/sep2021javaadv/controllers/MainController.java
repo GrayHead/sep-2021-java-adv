@@ -78,7 +78,7 @@ public class MainController {
         users.removeIf(next -> next.getId() == id);
 
         return users;
-
     }
+
 
 }
