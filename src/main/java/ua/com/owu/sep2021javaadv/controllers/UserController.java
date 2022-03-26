@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.com.owu.sep2021javaadv.dao.UserDAO;
+import ua.com.owu.sep2021javaadv.models.dto.UserDTO;
 import ua.com.owu.sep2021javaadv.models.dto.UserWithPassportDTO;
 import ua.com.owu.sep2021javaadv.models.entity.User;
 
@@ -16,10 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserController {
 
-//    todo DTO
-
     private UserDAO userDAO;
-
 
     @GetMapping("")
     public ResponseEntity<List<UserWithPassportDTO>> findAll() {
@@ -27,17 +25,16 @@ public class UserController {
         List<UserWithPassportDTO> userWithPassportDTOS = allUsers.stream().map(UserWithPassportDTO::new).collect(Collectors.toList());
         ResponseEntity<List<UserWithPassportDTO>> response = new ResponseEntity<>(userWithPassportDTOS, HttpStatus.OK);
         return response;
-
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable int id) {
+    public ResponseEntity<UserWithPassportDTO> findById(@PathVariable int id) {
         User user = userDAO.findById(id).orElse(new User());
         if (user.getId() == 0) {
-            return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<UserWithPassportDTO>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<User>(user, HttpStatus.OK);
+        return new ResponseEntity<UserWithPassportDTO>(new UserWithPassportDTO(user), HttpStatus.OK);
     }
 
 
@@ -46,33 +43,35 @@ public class UserController {
         System.out.println(userDAO.findByAge(33));
         System.out.println(userDAO.findByName("lana"));
         System.out.println(userDAO.findByNameAndAge("lana", 32));
-
     }
 
 
     @PostMapping("")
-    public List<User> saveUser(@RequestBody User user) {
+    public ResponseEntity<List<UserDTO>> saveUser(@RequestBody User user) {
         userDAO.save(user);
-        return userDAO.findAll();
+        List<UserDTO> collect = userDAO.findAll().stream().map(UserDTO::new).collect(Collectors.toList());
+        return new ResponseEntity<List<UserDTO>>(collect, HttpStatus.OK);
     }
 
     @PostMapping("/with-passport")
-    public List<UserWithPassportDTO> saveUserWithPassport(@RequestBody User user) {
+    public ResponseEntity<List<UserWithPassportDTO>> saveUserWithPassport(@RequestBody User user) {
         userDAO.save(user);
-        return userDAO.findAll().stream().map(UserWithPassportDTO::new).collect(Collectors.toList());
+        List<UserWithPassportDTO> collect = userDAO.findAll().stream().map(UserWithPassportDTO::new).collect(Collectors.toList());
+        return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable int id, @RequestBody User user) {
         user.setId(id);
         userDAO.save(user);
-        return user;
+        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public List<User> deleteUser(@PathVariable int id) {
+    public ResponseEntity<List<UserWithPassportDTO>> deleteUser(@PathVariable int id) {
         userDAO.deleteById(id);
-        return userDAO.findAll();
+        List<UserWithPassportDTO> collect = userDAO.findAll().stream().map(UserWithPassportDTO::new).collect(Collectors.toList());
+        return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 
 
