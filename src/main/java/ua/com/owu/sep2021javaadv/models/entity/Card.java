@@ -18,6 +18,11 @@ public class Card {
     private String series;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_cards",
+            joinColumns = @JoinColumn(name = "card_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private User user;
 
 
