@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -21,6 +23,9 @@ public class User {
     @JoinColumn(name = "passport_id")
     @ToString.Exclude
     private Passport passport;
+
+    @OneToMany
+    private List<Card> cards = new ArrayList<>();
 
 
 }
