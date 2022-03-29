@@ -75,4 +75,12 @@ public class UserController {
     }
 
 
+    /*lesson 4*/
+
+    @PostMapping("/saveWithCard")
+    public void saveUserWithCard(@RequestBody User user) {
+        userDAO.save(user);
+    }
+
+
 }
