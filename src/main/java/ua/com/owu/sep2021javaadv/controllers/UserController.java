@@ -1,13 +1,17 @@
 package ua.com.owu.sep2021javaadv.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ua.com.owu.sep2021javaadv.customErrors.CustomError;
 import ua.com.owu.sep2021javaadv.dao.UserDAO;
 import ua.com.owu.sep2021javaadv.models.dto.UserDTO;
 import ua.com.owu.sep2021javaadv.models.dto.UserWithPassportDTO;
 import ua.com.owu.sep2021javaadv.models.entity.User;
+import ua.com.owu.sep2021javaadv.services.IUserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +22,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private UserDAO userDAO;
+    private IUserService userServicePage;
 
     @GetMapping("")
     public ResponseEntity<List<UserWithPassportDTO>> findAll() {
@@ -63,8 +68,17 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable int id, @RequestBody User user) {
         user.setId(id);
-        userDAO.save(user);
-        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+
+        User userMain;
+        if (user.getAge() == 0) {
+            User user1 = userDAO.findById(id).get();
+            user1.setName(user.getName());
+            userMain = userDAO.save(user1);
+        } else {
+            userMain = userDAO.save(user);
+
+        }
+        return new ResponseEntity<>(new UserDTO(userMain), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -82,5 +96,17 @@ public class UserController {
         userDAO.save(user);
     }
 
+
+    /*lesson 5*/
+    @PostMapping("/all")
+    public List<UserDTO> saveUsersBatch(@RequestBody List<User> users) {
+        userDAO.saveAll(users);
+
+        if (true) {
+            throw new CustomError("too many users to save");
+        }
+        return userServicePage.findAllUserDTO();
+
+    }
 
 }

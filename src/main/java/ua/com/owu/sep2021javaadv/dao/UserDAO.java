@@ -25,7 +25,7 @@ public interface UserDAO extends JpaRepository<User, Integer> {
     List<User> customQueryUsersByNameWithFetchCities(/*@Param("name") */String name);
 
     @Query(nativeQuery = true, value = "select * from user where user.name =?1 and user.age=?2")
-    List<User> nativeUsersQuery(String name,int age);
+    List<User> nativeUsersQuery(String name, int age);
 
 }
 
