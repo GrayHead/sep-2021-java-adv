@@ -10,6 +10,8 @@ import ua.com.owu.sep2021javaadv.models.entity.User;
 import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +22,10 @@ public class UserService {
     public void saveUser(UserDTO dto) {
         userDAO.save(new User(dto));
 
+    }
+
+    public void saveUser(User user) {
+        userDAO.save(user);
     }
 
     public void saveUser(String name, MultipartFile avatar) throws IOException {
@@ -40,6 +46,16 @@ public class UserService {
 
     public String getUserAvatar(int id) {
         return userDAO.findById(id).get().getAvatar();
+
+    }
+
+    public List<User> getUsers() {
+        return userDAO.findAll();
+
+    }
+
+    public User getUserById(int id) {
+        return userDAO.findById(id).get();
 
     }
 
