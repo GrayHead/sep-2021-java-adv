@@ -28,4 +28,16 @@ public class MainController {
     public void save(@RequestBody User user) {
         userService.save(user);
     }
+
+    @GetMapping("/getInfo")
+    public String getinfo() {
+        return "some info";
+    }
+
+    @GetMapping("/admin/user/add")
+    public String userAdd() {
+        return "user was added";
+    }
+
+
 }
